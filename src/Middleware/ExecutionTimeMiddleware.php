@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace ExecutionTime\Middleware;
 
 use Closure;
 
-class executionTime
+class ExecutionTimeMiddleware
 {
     /**
      * Handle an incoming request.
