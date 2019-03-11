@@ -1,0 +1,6 @@
+{
+    "name": "y-ui/laravel-execution-time",
+    "description": "A request execution time statistics tools with Laravel",
+    "type": "metapackage",
+    "require": {}
+}
