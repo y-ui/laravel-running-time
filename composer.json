@@ -2,7 +2,18 @@
     "name": "y-ui/laravel-execution-time",
     "description": "A request execution time statistics tools with Laravel",
     "type": "metapackage",
-    "require": {},
+    "license": "MIT",
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "require-dev": {
+        "php": ">=7.0.0"
+    },
+    "authors": [
+        {
+            "name": "刘正伟"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "ExecutionTime\\": "src/"
@@ -12,5 +23,6 @@
         "psr-4": {
             "ExecutionTime\\": "src/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
