@@ -1,5 +1,7 @@
 # laravel-running-time
 
+![Image](https://github.com/y-ui/y-ui.github.io/blob/master/table.png)
+
 ## Installation
 
     composer require y-ui/laravel-running-time 0.1
