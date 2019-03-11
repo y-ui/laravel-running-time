@@ -37,6 +37,7 @@ This will count the last 7 days of data
     
 ## TODO LIST
  
+- Delayed batch write
 - More statistical tools
 - Web page
 - Config support
