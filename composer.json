@@ -16,12 +16,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "ExecutionTime\\": "src/"
+            "RunningTime\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ExecutionTime\\": "src/"
+            "RunningTime\\": "src/"
         }
     },
     "minimum-stability": "dev"
