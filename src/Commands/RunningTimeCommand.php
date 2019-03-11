@@ -1,12 +1,12 @@
 <?php
 
 
-namespace ExecutionTime\Command;
+namespace RunningTime\Command;
 
 use Illuminate\Console\Command;
 
 
-class TimeCommand extends Command
+class RunningTimeCommand extends Command
 {
 
     /**
@@ -14,7 +14,7 @@ class TimeCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'execution-time {line=10 : 最多展示多少行} {--startTime? : 开始时间} {--endTime? : 结束时间}';
+    protected $signature = 'running-time {--line= : 最多展示多少行} {--start= : 开始时间} {--end= : 结束时间}';
 
     /**
      * The console command description.
@@ -42,11 +42,7 @@ class TimeCommand extends Command
     {
         parent::__construct();
 
-        $this->logPath = storage_path('logs/ExecutionTime');
-
-        $this->line = $this->argument('line');
-        $this->start = $this->option('startTime') ?? (new \DateTime())->modify('-7 days');
-        $this->end = $this->option('endTime') ?? (new \DateTime());
+        $this->logPath = storage_path('logs/runningtime');
     }
 
     /**
@@ -56,6 +52,11 @@ class TimeCommand extends Command
      */
     public function handle()
     {
+        $options = $this->options();
+
+        $this->line = $options['line'] ?? 10;
+        $this->start = $options['start'] ? (new \DateTime($options['start'])) : (new \DateTime())->modify('-6 days');
+        $this->end = $options['end'] ? (new \DateTime($options['end'])) : (new \DateTime());
 
         $this->longestTime();
     }
@@ -64,34 +65,36 @@ class TimeCommand extends Command
     {
         $logs = $this->getLogFiles();
 
-        $urlTimes = $times = [];
+        $pathTimes = $times = [];
 
         foreach ($logs as $log) {
             $log = json_decode(trim($log), true);
-            $urlTimes[$log['url']][] = $log['time'];
+            $pathTimes[$log['path']][] = $log['time'];
         }
 
-
-        foreach ($urlTimes as $url => &$time) {
+        foreach ($pathTimes as $path => &$time) {
             $cnt = count($time);
             $max = max($time);
             $min = min($time);
-            $average = round(array_sum($time) / $cnt);
+            $average = round(array_sum($time) / $cnt, 2);
 
             $time = [
-                'url' => $url,
+                'path' => $path,
                 'average' => $average,
                 'max' => $max,
                 'min' => $min,
             ];
 
-            $times[$url] = $average;
+            $times[$path] = $average;
         }
 
-        rsort($times);
+        arsort($times);
         $times = array_slice($times, 0, $this->line);
+        foreach ($times as $key => &$time) {
+            $time = $pathTimes[$key];
+        }
 
-        $this->table(['url', 'average', 'max', 'min'], $times);
+        $this->table(['path', 'average', 'max', 'min'], $times);
     }
 
     /**
@@ -104,7 +107,7 @@ class TimeCommand extends Command
         $files = [];
         $days = $this->end->diff($this->start)->format('%a');
 
-        for ($n = 0; $n < $days; $n++) {
+        for ($n = 0; $n <= $days; $n++) {
             $files[] = $this->logPath . '/' . $this->start->format('Y-m-d') . '.log';
             $this->start->modify('+1 days');
         }

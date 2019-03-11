@@ -1,5 +1,5 @@
 {
-    "name": "y-ui/laravel-execution-time",
+    "name": "y-ui/laravel-running-time",
     "description": "A request execution time statistics tools with Laravel",
     "type": "library",
     "license": "MIT",

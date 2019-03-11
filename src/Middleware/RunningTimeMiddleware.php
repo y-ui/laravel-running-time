@@ -1,10 +1,10 @@
 <?php
 
-namespace ExecutionTime\Middleware;
+namespace RunningTime\Middleware;
 
 use Closure;
 
-class ExecutionTimeMiddleware
+class RunningTimeMiddleware
 {
     /**
      * Handle an incoming request.
@@ -20,14 +20,15 @@ class ExecutionTimeMiddleware
         if (!app()->runningInConsole()) {
             $log = [
                 'time' => round(microtime(true) - LARAVEL_START, 2),
-                'uri' => $request->url(),
+                'path' => $request->path(),
                 'params' => $request->all(),
+                't' => date('Y-m-d H:i:s'),
             ];
 
             $logJson = json_encode($log, JSON_UNESCAPED_UNICODE);
             $logFile = date("Y-m-d") . '.log';
 
-            file_put_contents(storage_path('logs/ExecutionTime/' . $logFile), $logJson . "\n", FILE_APPEND);
+            file_put_contents(storage_path('logs/runningtime/' . $logFile), $logJson . "\n", FILE_APPEND);
         }
 
         return $response;
