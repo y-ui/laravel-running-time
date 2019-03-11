@@ -2,5 +2,15 @@
     "name": "y-ui/laravel-execution-time",
     "description": "A request execution time statistics tools with Laravel",
     "type": "metapackage",
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "ExecutionTime\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ExecutionTime\\": "src/"
+        }
+    }
 }
