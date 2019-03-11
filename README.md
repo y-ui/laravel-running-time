@@ -17,7 +17,7 @@
 2. Open your `app/Http/Kernel.php` and add the following to `$middleware` array:
 
     ```php
-    RunningTime\Middleware\RunningTimeMiddleware::class,
+    \RunningTime\Middleware\RunningTimeMiddleware::class,
     ```
 
 ## Usage
