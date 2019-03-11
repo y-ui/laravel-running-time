@@ -61,6 +61,9 @@ class RunningTimeCommand extends Command
         $this->longestTime();
     }
 
+    /**
+     * 计算耗时最长的path
+     */
     public function longestTime()
     {
         $logs = $this->getLogFiles();
@@ -83,6 +86,7 @@ class RunningTimeCommand extends Command
                 'average' => $average,
                 'max' => $max,
                 'min' => $min,
+                'count' => $cnt,
             ];
 
             $times[$path] = $average;
@@ -94,7 +98,7 @@ class RunningTimeCommand extends Command
             $time = $pathTimes[$key];
         }
 
-        $this->table(['path', 'average', 'max', 'min'], $times);
+        $this->table(['path', 'average', 'max', 'min', 'count'], $times);
     }
 
     /**
