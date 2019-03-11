@@ -18,22 +18,22 @@
     RunningTime\Middleware\RunningTimeMiddleware::class,
     ```
 
-##Usage
-###simple usage
+## Usage
+### Simple usage
 ```shell
 php artisan running-time
 ```
 
 This will count the last 7 days of data
 
-###Options
+### Options
 
     --line  Maximum number of displayed lines
     --start Statistical start time
     --end   Statistical end time
     
     
- ##TUDO LIST
+## TODO LIST
  
 - More statistical tools
 - Web page
