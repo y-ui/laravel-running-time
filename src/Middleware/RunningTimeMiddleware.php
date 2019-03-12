@@ -43,7 +43,7 @@ class RunningTimeMiddleware
 
         if (config('runningtime.mode') == 'delay') {
             $this->checkLogDir();
-            $redis = app('reids');
+            $redis = app('redis');
 
             $redis->rpush(self::REDIS_LIST, $data . "\n");
 
