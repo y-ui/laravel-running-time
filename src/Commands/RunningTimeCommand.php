@@ -43,8 +43,6 @@ class RunningTimeCommand extends Command
         parent::__construct();
 
         $this->logPath = storage_path('logs/runningtime');
-
-        ini_set('memory_limit', config('runningtime.memory_limit'));
     }
 
     /**
@@ -54,6 +52,7 @@ class RunningTimeCommand extends Command
      */
     public function handle()
     {
+        ini_set('memory_limit', config('runningtime.memory_limit', '128M'));
         $st = microtime(true);
 
         $options = $this->options();
@@ -177,7 +176,10 @@ class RunningTimeCommand extends Command
         }
 
         $this->table(['path', 'average', 'max', 'min', 'count'], $times);
-        $this->info('run this command to view single stats: php artisan running-time --path="'. current($times)['path'] .'"');
+
+        if (!empty($times)) {
+            $this->info('run this command to view single stats: php artisan running-time --path="'. current($times)['path'] .'"');
+        }
     }
 
     /**
