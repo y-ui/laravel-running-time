@@ -32,4 +32,6 @@ return [
 
     'path' => storage_path('logs/runningtime/'),
 
+    'memory_limit' => '512M', // PHP memory_limit
+
 ];

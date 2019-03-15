@@ -26,12 +26,11 @@ class RunningTimeMiddleware
             $log = [
                 'time' => round(microtime(true) - LARAVEL_START, 2),
                 'path' => $request->path(),
-                'params' => $request->all(),
-                't' => date('Y-m-d H:i:s'),
+                'params' => json_encode($request->all(), JSON_UNESCAPED_UNICODE),
             ];
 
-            $logJson = json_encode($log, JSON_UNESCAPED_UNICODE);
-            $this->writeData($logJson);
+            $logText = implode('||', $log);
+            $this->writeData($logText);
         }
 
         return $response;
