@@ -65,7 +65,7 @@ class RunningTimeMiddleware
     {
         $path = config('runningtime.path');
         if (!is_dir($path)) {
-            mkdir($path);
+            mkdir($path, 0777, true);
         }
     }
 

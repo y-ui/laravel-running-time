@@ -122,6 +122,10 @@ class RunningTimeCommand extends Command
         }
 
         foreach ($sortedPath as $key => &$value) {
+            if (empty($value)) {
+                unset($sortedPath[$key]);
+                continue;
+            }
             $value = [$value, $key];
         }
 

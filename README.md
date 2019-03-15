@@ -4,7 +4,7 @@
 
 ## Installation
 
-    composer require y-ui/laravel-running-time 0.2
+    composer require y-ui/laravel-running-time ^1.0
     
 ## Configuration
 
@@ -44,6 +44,8 @@ php artisan running-time --line=20
 php artisan running-time --start=2019-03-03
 
 php artisan running-time --start='1 month ago'
+
+php artisan running-time --path='your path'
 ```
 
 
@@ -57,5 +59,4 @@ php artisan running-time --start='1 month ago'
     
 ## TODO LIST
  
-- More statistical tools
 - Web page
