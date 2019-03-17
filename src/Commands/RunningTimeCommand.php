@@ -84,12 +84,13 @@ class RunningTimeCommand extends Command
      */
     public function pathTime($path)
     {
-        $pathTimes = $this->getLogFiles();
+        $line = $this->getLogFiles();
 
         $times = $max = $min = 0;
         $sortedPath = array_pad([], $this->line, 0);
 
-        foreach ($pathTimes as $key => &$log) {
+        $count = 0;
+        foreach ($line as $log) {
             $log = explode('||', rtrim($log));
             if ($log[1] == $path) {
                 $time = $log[0];
@@ -107,17 +108,13 @@ class RunningTimeCommand extends Command
                     arsort($sortedPath);
                 }
 
-                $log = [
-                    'time' => $time,
-                    'params' => $log['2'],
-                ];
                 $times += $time;
 
                 if ($time > $max || $max == 0) $max = $time;
                 if ($time < $min || $min == 0) $min = $time;
-            } else {
-                unset($pathTimes[$key]);
             }
+
+            ++$count;
         }
 
         foreach ($sortedPath as $key => &$value) {
@@ -128,8 +125,7 @@ class RunningTimeCommand extends Command
             $value = [$value, $key];
         }
 
-        $average = round($times / count($pathTimes), 2);
-        $count = count($pathTimes);
+        $average = round($times / $count, 2);
 
         $this->table(['path', 'average', 'max', 'min', 'count'], [[$path, $average, $max, $min, $count]]);
 
