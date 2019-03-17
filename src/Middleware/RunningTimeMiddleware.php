@@ -6,21 +6,33 @@ use Closure;
 
 class RunningTimeMiddleware
 {
-
+    /**
+     * Last time of putting log to cache.
+     */
     const REDIS_TIME = 'laravel_running_time:time';
 
+    /**
+     * Redis list for caching request's log.
+     */
     const REDIS_LIST = 'laravel_running_time:list';
+
+    /**
+     * @var bool
+     */
+    protected $isDelayMode;
 
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Closure $next
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
-        $response =  $next($request);
+        $response = $next($request);
+
+        $this->isDelayMode = config('runningtime.mode') == 'delay';
 
         if (!app()->runningInConsole()) {
             $log = [
@@ -30,37 +42,81 @@ class RunningTimeMiddleware
             ];
 
             $logText = implode('||', $log);
-            $this->writeData($logText);
+            $logText .= $this->isDelayMode ? '' : "\n";
+
+            $this->writeRequestLog($logText);
         }
 
         return $response;
     }
 
-    private function writeData($data)
+    /**
+     * Write request time to log.
+     *
+     * @param string $data
+     */
+    private function writeRequestLog($data)
     {
-        $logFile = date("Y-m-d") . '.log';
+        $this->checkLogDir();
 
-        if (config('runningtime.mode') == 'delay') {
-            $this->checkLogDir();
-            $redis = app('redis');
+        if ($this->isDelayMode) {
+            app('redis')->rpush(self::REDIS_LIST, $data);
 
-            $redis->rpush(self::REDIS_LIST, $data . "\n");
-
-            if ($redis->llen(self::REDIS_LIST) >= config('runningtime.delay.log')
-                || time() - $redis->get(self::REDIS_TIME) >= config('runningtime.delay.time')
-            ) {
-                $len = $redis->llen(self::REDIS_LIST);
-                $logs = $redis->lrange(self::REDIS_LIST, 0, $len - 1);
-                file_put_contents(config('runningtime.path') . '/' . $logFile, implode('', $logs), FILE_APPEND);
-                $redis->ltrim(self::REDIS_LIST, $len, -1);
-                $redis->set(self::REDIS_TIME, time());
+            if ($this->readyForWriting()) {
+                $data = $this->pullCachedLogs();
             }
-        } else {
-            $this->checkLogDir();
-            file_put_contents(config('runningtime.path') . '/' . $logFile, $data . "\n", FILE_APPEND);
+        }
+
+        $this->append($data);
+    }
+
+    /**
+     * Read history log from cache and then delete from cache.
+     *
+     * @return string
+     */
+    private function pullCachedLogs()
+    {
+        $len = app('redis')->llen(self::REDIS_LIST);
+        $logs = app('redis')->lrange(self::REDIS_LIST, 0, $len - 1);
+
+        app('redis')->ltrim(self::REDIS_LIST, $len, -1);
+
+        return implode('', $logs);
+    }
+
+    /**
+     * Determine if logs is ready for writing in delay mode.
+     *
+     * @return bool
+     */
+    private function readyForWriting()
+    {
+        return app('redis')->llen(self::REDIS_LIST) >= config('runningtime.delay.log')
+            || time() - app('redis')->get(self::REDIS_TIME) >= config('runningtime.delay.time');
+    }
+
+    /**
+     * Append log data to file.
+     *
+     * @param string $data
+     */
+    private function append($data)
+    {
+        $logFilePath = config('runningtime.path') . '/' . date('Y-m-d') . '.log';
+
+        file_put_contents($logFilePath, $data, FILE_APPEND);
+
+        if ($this->isDelayMode) {
+            app('redis')->set(self::REDIS_TIME, time());
         }
     }
 
+    /**
+     * Ensure the path of logs exists.
+     *
+     * @return void
+     */
     private function checkLogDir()
     {
         $path = config('runningtime.path');
@@ -68,5 +124,4 @@ class RunningTimeMiddleware
             mkdir($path, 0777, true);
         }
     }
-
 }
