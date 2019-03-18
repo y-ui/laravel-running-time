@@ -10,6 +10,7 @@ return [
      |
      | The mode of write file, default write file immediately
      | If the qps of your app is very large, please select delay mode
+     | default: real_time
      |
      | options: delay
      */

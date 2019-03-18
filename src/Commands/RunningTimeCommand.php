@@ -14,7 +14,7 @@ class RunningTimeCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'running-time {--line= : The maximum number of rows to show} {--start= : Log start date} {--end= : Log end date} {--path= : Statistical path runtime}';
+    protected $signature = 'running-time {--line= : The maximum number of rows to show} {--start= : Log start date} {--end= : Log end date} {--path= : Statistical path runtime} {--lessMemory : Change file reading mode, Significantly reduce memory usage and increase time spent}';
 
     /**
      * The console command description.
@@ -67,6 +67,8 @@ class RunningTimeCommand extends Command
             return;
         }
 
+        register_shutdown_function(__NAMESPACE__ . '\RunningTimeCommand::errorHandle');
+
         if (isset($options['path'])) {
             $this->pathTime($options['path']);
         } else {
@@ -90,38 +92,36 @@ class RunningTimeCommand extends Command
         $sortedPath = array_pad([], $this->line, 0);
 
         $count = 0;
-        foreach ($line as $log) {
-            $log = explode('||', rtrim($log));
-            if ($log[1] == $path) {
-                $time = $log[0];
-
-                // 为了避免大数组排序，在遍历中直接排出{$this->line}个请求
-                end($sortedPath);
-                $lastKey = key($sortedPath);
-                if ($time > $sortedPath[$lastKey]) {
-                    if (isset($sortedPath[$log[2]]) && $time > $sortedPath[$log[2]]) {
-                        $sortedPath[$log[2]] = $time;
-                    } else if (!isset($sortedPath[$log[2]])) {
-                        unset($sortedPath[$lastKey]);
-                        $sortedPath[$log[2]] = $time;
+        foreach ($line as $logs) {
+            !is_array($logs) && $logs = [$logs];
+            foreach ($logs as $log) {
+                list($time, $p, $params) = explode('||', rtrim($log));
+                if ($p == $path) {
+                    // 为了避免大数组排序，在遍历中直接排出{$this->line}个请求
+                    end($sortedPath);
+                    $lastKey = key($sortedPath);
+                    if ($time > $sortedPath[$lastKey]) {
+                        if (isset($sortedPath[$params]) && $time > $sortedPath[$params]) {
+                            $sortedPath[$params] = $time;
+                        } else if (!isset($sortedPath[$params])) {
+                            unset($sortedPath[$lastKey]);
+                            $sortedPath[$params] = $time;
+                        }
+                        arsort($sortedPath);
                     }
-                    arsort($sortedPath);
+
+                    $times += $time;
+
+                    if ($time > $max || $max == 0) $max = $time;
+                    if ($time < $min || $min == 0) $min = $time;
+                    ++$count;
                 }
-
-                $times += $time;
-
-                if ($time > $max || $max == 0) $max = $time;
-                if ($time < $min || $min == 0) $min = $time;
             }
 
-            ++$count;
         }
 
+        $sortedPath = array_filter($sortedPath);
         foreach ($sortedPath as $key => &$value) {
-            if (empty($value)) {
-                unset($sortedPath[$key]);
-                continue;
-            }
             $value = [$value, $key];
         }
 
@@ -139,27 +139,30 @@ class RunningTimeCommand extends Command
      */
     public function longestTime()
     {
-        $logs = $this->getLogFiles();
+        $line = $this->getLogFiles();
 
         $pathTimes = $times = [];
 
-        foreach ($logs as $log) {
-            list($time, $path) = explode('||', rtrim($log));
+        foreach ($line as $logs) {
+            !is_array($logs) && $logs = [$logs];
+            foreach ($logs as $log) {
+                list($time, $path) = explode('||', rtrim($log));
 
-            if (!isset($pathTimes[$path])) {
-                $pathTimes[$path] = [
-                    'path' => $path,
-                    'max' => 0,
-                    'min' => 0,
-                    'count' => 0,
-                    'total' => 0,
-                ];
+                if (!isset($pathTimes[$path])) {
+                    $pathTimes[$path] = [
+                        'path' => $path,
+                        'max' => 0,
+                        'min' => PHP_INT_MAX,
+                        'count' => 0,
+                        'total' => 0,
+                    ];
+                }
+
+                if ($time > $pathTimes[$path]['max']) $pathTimes[$path]['max'] = $time;
+                if ($time < $pathTimes[$path]['min']) $pathTimes[$path]['min'] = $time;
+                ++$pathTimes[$path]['count'];
+                $pathTimes[$path]['total'] += $time;
             }
-
-            if ($time > $pathTimes[$path]['max']) $pathTimes[$path]['max'] = $time;
-            if ($time < $pathTimes[$path]['min']) $pathTimes[$path]['min'] = $time;
-            ++$pathTimes[$path]['count'];
-            $pathTimes[$path]['total'] += $time;
         }
 
         foreach ($pathTimes as $path => &$time) {
@@ -204,21 +207,19 @@ class RunningTimeCommand extends Command
             $this->start->modify('+1 days');
         }
 
-        $contents = [];
-
         foreach ($files as $file) {
             if (file_exists($file)) {
-                $fp = fopen($file, 'r');
-
-                while (($line = fgets($fp)) !== false) {
-                    yield $line;
+                if ($this->option('lessMemory')) {
+                    $fp = fopen($file, 'r');
+                    while (($line = fgets($fp)) !== false) {
+                        yield $line;
+                    }
+                    fclose($fp);
+                } else {
+                    yield file($file);
                 }
-
-                fclose($fp);
             }
         }
-
-        return $contents;
     }
 
     /**
@@ -227,5 +228,14 @@ class RunningTimeCommand extends Command
     protected function showMemory()
     {
         $this->info('this time memory usage: ' . round(memory_get_usage()/1024/1024, 2) . 'M');
+    }
+
+    public static function errorHandle()
+    {
+        $error = error_get_last();
+        if ($error && stripos($error['message'], 'Allowed memory size of') !== false) {
+            echo "\n Warnning: Out of memory! you can run command with --lessMemory to reduce memory usage\n";
+            exit;
+        }
     }
 }

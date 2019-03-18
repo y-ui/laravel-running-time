@@ -4,7 +4,7 @@
 
 ## Installation
 
-    composer require y-ui/laravel-running-time ^1.0
+    composer require y-ui/laravel-running-time ^1.1
     
 ## Configuration
 
@@ -32,6 +32,13 @@
     'mode' => 'delay',
     ```
     
+5. If out of memory after running the command, open your `config/runningtime.php`:
+
+    ```php
+    'memory_limit' => '512M', //Modify to the appropriate value
+    ```
+    or run command with --lessMemory
+    
 ## Usage
 ### Simple usage
 ```shell
@@ -46,8 +53,10 @@ php artisan running-time --start=2019-03-03
 php artisan running-time --start='1 month ago'
 
 php artisan running-time --path='your path'
-```
 
+#Significantly reduce memory usage but increase time spent
+php artisan running-time --lessMemory
+```
 
 
 ### Options
@@ -55,6 +64,8 @@ php artisan running-time --path='your path'
     --line  Maximum number of displayed lines
     --start Statistical start time
     --end   Statistical end time
+    --path  Statistical path runtime
+    --lessMemory Significantly reduce memory usage and increase time spent
     
     
 ## TODO LIST
