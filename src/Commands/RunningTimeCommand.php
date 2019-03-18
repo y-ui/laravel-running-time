@@ -150,7 +150,7 @@ class RunningTimeCommand extends Command
                 $pathTimes[$path] = [
                     'path' => $path,
                     'max' => 0,
-                    'min' => 0,
+                    'min' => PHP_INT_MAX,
                     'count' => 0,
                     'total' => 0,
                 ];
