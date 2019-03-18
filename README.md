@@ -71,3 +71,6 @@ php artisan running-time --lessMemory
 ## TODO LIST
  
 - Web page
+
+## License
+laravel-running-time is an open-sourced software licensed under the MIT license.
