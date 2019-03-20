@@ -1,5 +1,10 @@
 # laravel-running-time
 
+[![Latest Stable Version](https://poser.pugx.org/y-ui/laravel-running-time/v/stable)](https://packagist.org/packages/y-ui/laravel-running-time)
+[![Total Downloads](https://poser.pugx.org/y-ui/laravel-running-time/downloads)](https://packagist.org/packages/y-ui/laravel-running-time)
+[![Latest Unstable Version](https://poser.pugx.org/y-ui/laravel-running-time/v/unstable)](https://packagist.org/packages/y-ui/laravel-running-time)
+[![License](https://poser.pugx.org/y-ui/laravel-running-time/license)](https://packagist.org/packages/y-ui/laravel-running-time)
+
 ![Image](https://github.com/y-ui/y-ui.github.io/blob/master/table.png)
 
 ## Installation
