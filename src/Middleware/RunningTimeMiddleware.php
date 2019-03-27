@@ -119,7 +119,7 @@ class RunningTimeMiddleware
      */
     private function checkLogDir()
     {
-        $path = config('runningtime.path');
+        $path = config('runningtime.path', storage_path('logs/runningtime/'));
         if (!is_dir($path)) {
             mkdir($path, 0777, true);
         }
