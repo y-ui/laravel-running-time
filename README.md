@@ -42,7 +42,7 @@
     ```php
     'memory_limit' => '512M', //Modify to the appropriate value
     ```
-    or run command with --lessMemory
+    or run command with `--lessMemory`
     
 ## Usage
 ### Simple usage
