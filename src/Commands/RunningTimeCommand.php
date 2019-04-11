@@ -42,7 +42,7 @@ class RunningTimeCommand extends Command
     {
         parent::__construct();
 
-        $this->logPath = storage_path('logs/runningtime');
+        $this->logPath = config('runningtime.path', storage_path('logs/runningtime/'));
     }
 
     /**
