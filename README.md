@@ -71,6 +71,14 @@ php artisan running-time --lessMemory
     --end   Statistical end time
     --path  Statistical path runtime
     --lessMemory Significantly reduce memory usage and increase time spent
+
+## Clean log files
+### Simple usage
+```shell
+php artisan running-time:clear --all
+
+php artisan running-time:clear --recent=30
+```    
     
     
 ## TODO LIST

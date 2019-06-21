@@ -3,6 +3,7 @@
 namespace RunningTime;
 
 use Illuminate\Support\ServiceProvider;
+use RunningTime\Command\CleanLogCommand;
 use RunningTime\Command\RunningTimeCommand;
 
 class RunningTimeServiceProvider extends ServiceProvider
@@ -40,6 +41,7 @@ class RunningTimeServiceProvider extends ServiceProvider
     {
         $commands = [
             RunningTimeCommand::class,
+            CleanLogCommand::class,
         ];
 
         $this->commands($commands);

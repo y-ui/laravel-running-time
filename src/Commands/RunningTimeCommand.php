@@ -59,8 +59,8 @@ class RunningTimeCommand extends Command
 
         $this->line = $options['line'] ?? 10;
         try {
-            $this->start = isset($options['start']) ? (new \DateTime($options['start'])) : (new \DateTime())->modify('-6 days');
-            $this->end = isset($options['end']) ? (new \DateTime($options['end'])) : (new \DateTime());
+            $this->start = $this->option('start') ? (new \DateTime($options['start'])) : (new \DateTime())->modify('-6 days');
+            $this->end = $this->option('end') ? (new \DateTime($options['end'])) : (new \DateTime());
         } catch (\Exception $exception) {
             preg_match('/__construct\(\): (.*?) at/', $exception->getMessage(), $match);
             $this->error($match[1] ?? 'Invalid date format');
@@ -69,7 +69,7 @@ class RunningTimeCommand extends Command
 
         register_shutdown_function(__NAMESPACE__ . '\RunningTimeCommand::errorHandle');
 
-        if (isset($options['path'])) {
+        if ($this->option('path')) {
             $this->pathTime($options['path']);
         } else {
             $this->longestTime();
@@ -129,7 +129,7 @@ class RunningTimeCommand extends Command
 
         $this->table(['path', 'average', 'max', 'min', 'count'], [[$path, $average, $max, $min, $count]]);
 
-        $this->info("Top {$this->line} request reversed by time and uniqued by params with path $path:");
+        $this->info("Top {$this->line} request reversed by time and unique by params with path $path:");
 
         $this->table(['time', 'params'], $sortedPath);
     }
@@ -234,7 +234,7 @@ class RunningTimeCommand extends Command
     {
         $error = error_get_last();
         if ($error && stripos($error['message'], 'Allowed memory size of') !== false) {
-            echo "\n Warnning: Out of memory! you can run command with --lessMemory to reduce memory usage\n";
+            echo "\n Warning: Out of memory! you can run command with --lessMemory to reduce memory usage\n";
             exit;
         }
     }
