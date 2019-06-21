@@ -42,7 +42,7 @@ class RunningTimeCommand extends Command
     {
         parent::__construct();
 
-        $this->logPath = storage_path('logs/runningtime');
+        $this->logPath = config('runningtime.path', storage_path('logs/runningtime/'));
     }
 
     /**
@@ -129,7 +129,7 @@ class RunningTimeCommand extends Command
 
         $this->table(['path', 'average', 'max', 'min', 'count'], [[$path, $average, $max, $min, $count]]);
 
-        $this->info("Top {$this->line} request reversed by time and uniqued by params with path $path:");
+        $this->info("Top {$this->line} request reversed by time and unique by params with path $path:");
 
         $this->table(['time', 'params'], $sortedPath);
     }
@@ -234,7 +234,7 @@ class RunningTimeCommand extends Command
     {
         $error = error_get_last();
         if ($error && stripos($error['message'], 'Allowed memory size of') !== false) {
-            echo "\n Warnning: Out of memory! you can run command with --lessMemory to reduce memory usage\n";
+            echo "\n Warning: Out of memory! you can run command with --lessMemory to reduce memory usage\n";
             exit;
         }
     }
