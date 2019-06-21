@@ -15,7 +15,7 @@ class CleanLogCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'running-time:clear {--all : Delete all logs} {--recent= : Keep logs for the last ? days}';
+    protected $signature = 'running-time:clear {--all : Delete all logs} {--recent= : Delete log files older than ? days}';
 
     /**
      * The console command description.
@@ -45,14 +45,12 @@ class CleanLogCommand extends Command
      */
     public function handle()
     {
-        $options = $this->options();
-
-        if (isset($options['all'])) {
+        if ($this->option('all')) {
             $this->deleteAll();
-        } elseif (isset($options['recent'])) {
+        } elseif ($this->option('recent')) {
             $this->deleteRecent();
         } else {
-            $this->info('use --all delete all log files, use --recent=30 keep logs for the last 30 days');
+            $this->info('use --all delete all log files, use --recent=30 Delete log files older than 30 days');
         }
     }
 
@@ -61,8 +59,9 @@ class CleanLogCommand extends Command
      */
     protected function deleteRecent()
     {
-        $days = abs($this->option('recent')) + 1;
-        $start = (new \DateTime())->modify("- $days days");
+        $days = abs($this->option('recent')) - 1;
+
+        $start = (new \DateTime())->modify("-$days days");
 
         $keepFiles = [];
         for ($n = 0; $n <= $days; $n++) {

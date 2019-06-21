@@ -59,8 +59,8 @@ class RunningTimeCommand extends Command
 
         $this->line = $options['line'] ?? 10;
         try {
-            $this->start = isset($options['start']) ? (new \DateTime($options['start'])) : (new \DateTime())->modify('-6 days');
-            $this->end = isset($options['end']) ? (new \DateTime($options['end'])) : (new \DateTime());
+            $this->start = $this->option('start') ? (new \DateTime($options['start'])) : (new \DateTime())->modify('-6 days');
+            $this->end = $this->option('end') ? (new \DateTime($options['end'])) : (new \DateTime());
         } catch (\Exception $exception) {
             preg_match('/__construct\(\): (.*?) at/', $exception->getMessage(), $match);
             $this->error($match[1] ?? 'Invalid date format');
@@ -69,7 +69,7 @@ class RunningTimeCommand extends Command
 
         register_shutdown_function(__NAMESPACE__ . '\RunningTimeCommand::errorHandle');
 
-        if (isset($options['path'])) {
+        if ($this->option('path')) {
             $this->pathTime($options['path']);
         } else {
             $this->longestTime();
