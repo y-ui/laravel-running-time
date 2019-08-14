@@ -5,7 +5,7 @@
 [![Latest Unstable Version](https://poser.pugx.org/y-ui/laravel-running-time/v/unstable)](https://packagist.org/packages/y-ui/laravel-running-time)
 [![License](https://poser.pugx.org/y-ui/laravel-running-time/license)](https://packagist.org/packages/y-ui/laravel-running-time)
 
-![Image](https://github.com/y-ui/y-ui.github.io/blob/master/table.png)
+![Image](https://github.com/y-ui/y-ui.github.io/blob/master/table-20190814.png)
 
 ## Installation
 
