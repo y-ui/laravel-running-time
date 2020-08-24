@@ -12,32 +12,26 @@
     composer require y-ui/laravel-running-time ^1.1
     
 ## Configuration
-
-1. Open your `config/app.php` and add the following to the providers array:
-
-    ```php
-    \RunningTime\RunningTimeServiceProvider::class,
-    ```
     
-2. Open your `app/Http/Kernel.php` and add the following to `$middleware` array:
+1. Open your `app/Http/Kernel.php` and add the following to `$middleware` array:
 
     ```php
     \RunningTime\Middleware\RunningTimeMiddleware::class,
     ```
  
-3. Run the command below to publish the package config file `config/runningtime.php`:
+2. Run the command below to publish the package config file `config/runningtime.php`:
  
     ```php
     php artisan vendor:publish --provider='RunningTime\RunningTimeServiceProvider'
     ```
 
-4. If you want to run with batch mode, this requires redis. open your `config/runningtime.php`:
+- If you want to run with batch mode, this requires redis. open your `config/runningtime.php`:
 
     ```php
     'mode' => 'delay',
     ```
     
-5. If out of memory after running the command, open your `config/runningtime.php`:
+- If out of memory after running the command, open your `config/runningtime.php`:
 
     ```php
     'memory_limit' => '512M', //Modify to the appropriate value

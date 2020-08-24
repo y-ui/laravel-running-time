@@ -34,6 +34,8 @@ class RunningTimeMiddleware
             $path = $request->route()->uri();
         }
 
+        $path = $request->method() . ':' . $path;
+
         $this->isDelayMode = config('runningtime.mode') == 'delay';
         $this->redisList = config('app.name') . ':laravel_running_time:list';
         $this->redisTime = config('app.name') . ':laravel_running_time:time';
